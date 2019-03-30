@@ -1,3 +1,4 @@
+import rospy
 from yaw_controller import YawController 
 from pid import PID
 from lowpass import LowPassFilter
@@ -8,6 +9,7 @@ ONE_MPH = 0.44704
 
 class Controller(object):
     def __init__(self, 
+                 vehicle_mass, fuel_capacity, brake_deadband, decel_limit, accel_limit, wheel_radius,
                  wheel_base, steer_ratio, min_speed, max_lat_accel, max_steer_angle):
         # TODO: Implement
         self.yaw_controller = YawController(wheel_base, steer_ratio, 

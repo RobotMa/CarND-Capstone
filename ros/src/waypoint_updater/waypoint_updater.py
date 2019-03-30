@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import rospy
+from std_msgs.msg import Int32
 from geometry_msgs.msg import PoseStamped
 from styx_msgs.msg import Lane, Waypoint
 from scipy.spatial import KDTree
+from styx_msgs.msg import TrafficLightArray
 
 import numpy as np
 import math 
@@ -34,8 +36,11 @@ class WaypointUpdater(object):
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
-        rospy.Subscriber('/traffic_waypoint', Lane, self.traffic_cb)
-        rospy.Subscriber('/obstacle', Lane, self.traffic_cb)
+        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
+        rospy.Subscriber('/obstacle', PoseStamped, self.obstacle_cb)
+        
+        # Debug
+        rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb)
 
 
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
@@ -47,6 +52,7 @@ class WaypointUpdater(object):
         self.waypoint_tree = None
         self.traffic = None
         self.obstacle = None
+        self.lights = []
 
         self.loop()
 
@@ -59,7 +65,7 @@ class WaypointUpdater(object):
                 self.publish_waypoints(closest_waypoint_idx)
             rate.sleep()
     
-    def get_closest_waypoint(self):
+    def get_closest_waypoint_idx(self):
         x = self.pose.pose.position.x
         y = self.pose.pose.position.y
         closest_idx = self.waypoint_tree.query([x, y], 1)[1]
@@ -92,8 +98,9 @@ class WaypointUpdater(object):
         # TODO: Implement
         self.way_points = waypoints
         if not self.waypoints_2d:
-            self.waypoints_2d = [[ waypoint.pose.pose.positions.x, waypoint.pose.pose.position.y ] for waypoint in waypoints]
-            self.waypoint_tree = KDTree(waypoints_2d)
+            self.waypoints_2d = [[ waypoint.pose.pose.position.x, waypoint.pose.pose.position.y ] 
+                                 for waypoint in waypoints.waypoints]
+            self.waypoint_tree = KDTree(self.waypoints_2d)
             
         pass
 
@@ -103,6 +110,10 @@ class WaypointUpdater(object):
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
+        pass
+
+    def traffic_lights_cb(self, msg):
+        # TODO: Callback for /traffic_lights message. Implement
         pass
 
     def get_waypoint_velocity(self, waypoint):
