@@ -37,36 +37,24 @@ class WaypointUpdater(object):
 
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
-
-        # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
         rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
-        rospy.Subscriber('/obstacle', PoseStamped, self.obstacle_cb)
+        #rospy.Subscriber('/obstacle', PoseStamped, self.obstacle_cb)
         
-        # Debug
-        rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb)
-
-
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
 
-        # TODO: Add other member variables you need below
         self.pose = None
         self.base_lane = None
         self.waypoints_2d = None
         self.waypoint_tree = None
-        self.traffic = None
-        self.obstacle = None
-        self.lights = []
-        self.stopline_wp_idx = None
+        self.stopline_wp_idx = -1
 
         self.loop()
 
     def loop(self):
         rate = rospy.Rate(50)
         while not rospy.is_shutdown():
-            if self.pose and self.waypoints_2d:
-                # Get the closest waypoint
-                closest_waypoint_idx = self.get_closest_waypoint_idx()
-                self.publish_waypoints(closest_waypoint_idx)
+            if self.pose and self.base_lane:
+                self.publish_waypoints()
             rate.sleep()
     
     def get_closest_waypoint_idx(self):
@@ -87,9 +75,10 @@ class WaypointUpdater(object):
             closest_idx = (closest_idx + 1) % len(self.waypoints_2d)
         return closest_idx
         
-    def publish_waypoints(self, closest_idx):
-        final_lane = self.generate_lane() 
-        self.final_waypoints_pub.publish(final_lane)
+    def publish_waypoints(self):
+        if self.waypoint_tree:
+            final_lane = self.generate_lane() 
+            self.final_waypoints_pub.publish(final_lane)
         
     def generate_lane(self):
         lane = Lane()
@@ -126,7 +115,6 @@ class WaypointUpdater(object):
     def pose_cb(self, msg):
         # TODO: Implement
         self.pose = msg
-        pass
 
     def waypoints_cb(self, waypoints):
         # TODO: Implement
@@ -135,13 +123,10 @@ class WaypointUpdater(object):
             self.waypoints_2d = [[ waypoint.pose.pose.position.x, waypoint.pose.pose.position.y ] 
                                  for waypoint in waypoints.waypoints]
             self.waypoint_tree = KDTree(self.waypoints_2d)
-            
-        pass
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
-        self.stopline_wp_idx = msg.data
-        pass
+        self.stopline_wp_idx = msg
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
