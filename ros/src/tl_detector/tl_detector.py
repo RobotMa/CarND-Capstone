@@ -86,15 +86,19 @@ class TLDetector(object):
         of times till we start using it. Otherwise the previous stable state is
         used.
         '''
+        print('current light state is {}'.format(self.state))
         if self.state != state:
+            print("Condition 1")
             self.state_count = 0
             self.state = state
         elif self.state_count >= STATE_COUNT_THRESHOLD:
+            print("Condition 2")
             self.last_state = self.state
             light_wp = light_wp if state == TrafficLight.RED else -1
             self.last_wp = light_wp
             self.upcoming_red_light_pub.publish(Int32(light_wp))
         else:
+            print("Condition 3")
             self.upcoming_red_light_pub.publish(Int32(self.last_wp))
         self.state_count += 1
 
@@ -154,6 +158,7 @@ class TLDetector(object):
         stop_line_positions = self.config['stop_line_positions']
         if(self.pose and self.waypoint_tree and self.waypoints):
             car_wp_idx = self.get_closest_waypoint(self.pose.pose)
+            print("car wp idx is {}".format(car_wp_idx))
 
             diff = len(self.waypoints.waypoints)
             temp_pose = Pose()
@@ -168,6 +173,7 @@ class TLDetector(object):
                     diff = d
                     closest_light = light
                     light_wp_idx = temp_wp_idx
+                    print(light_wp_idx)
 
         #TODO find the closest visible traffic light (if one exists)
 
