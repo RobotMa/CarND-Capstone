@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
 import eventlet
-eventlet.monkey_patch(socket=True, select=True, time=True)
-
 import eventlet.wsgi
+from flask import Flask, render_template
 import socketio
 import time
-from flask import Flask, render_template
 
 from bridge import Bridge
 from conf import conf
+
+eventlet.monkey_patch(socket=True, select=True, time=True)
+
+
 
 sio = socketio.Server()
 app = Flask(__name__)

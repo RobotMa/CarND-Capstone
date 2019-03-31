@@ -1,5 +1,6 @@
 from attrdict import AttrDict
 
+
 conf = AttrDict({
     'subscribers': [
         {'topic':'/vehicle/steering_cmd', 'type': 'steer_cmd', 'name': 'steering'},

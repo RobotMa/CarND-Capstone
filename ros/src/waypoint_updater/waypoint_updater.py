@@ -1,15 +1,5 @@
 #!/usr/bin/env python
 
-import rospy
-from std_msgs.msg import Int32
-from geometry_msgs.msg import PoseStamped
-from styx_msgs.msg import Lane, Waypoint
-from scipy.spatial import KDTree
-from styx_msgs.msg import TrafficLightArray
-
-import numpy as np
-import math 
-
 '''
 This node will publish waypoints from the car's current position to some `x` distance ahead.
 
@@ -24,6 +14,17 @@ as well as to verify your TL classifier.
 
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
+
+import math 
+from scipy.spatial import KDTree
+
+from geometry_msgs.msg import PoseStamped
+import numpy as np
+import rospy
+from std_msgs.msg import Int32
+from styx_msgs.msg import Lane, Waypoint
+from styx_msgs.msg import TrafficLightArray
+
 
 LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
 
@@ -80,14 +81,14 @@ class WaypointUpdater(object):
         
         val = np.dot(pos_vect - cl_vect, cl_vect - prev_vect)
         if val > 0:
-            closest_idx = (closest_idx + 1) % len(self.base_waypoints)
+            closest_idx = (closest_idx + 1) % len(self.waypoints_2d)
         return closest_idx
         
     def publish_waypoints(self, closest_idx):
         lane = Lane()
         lane.header = self.base_waypoints.header
         lane.waypoints = self.base_waypoints.waypoints[closest_idx : closest_idx + LOOKAHEAD_WPS]
-        self.final_waypoints_pub(lane)
+        self.final_waypoints_pub.publish(lane)
         
     def pose_cb(self, msg):
         # TODO: Implement
@@ -96,7 +97,7 @@ class WaypointUpdater(object):
 
     def waypoints_cb(self, waypoints):
         # TODO: Implement
-        self.way_points = waypoints
+        self.base_waypoints = waypoints
         if not self.waypoints_2d:
             self.waypoints_2d = [[ waypoint.pose.pose.position.x, waypoint.pose.pose.position.y ] 
                                  for waypoint in waypoints.waypoints]

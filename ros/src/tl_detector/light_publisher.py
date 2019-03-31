@@ -1,15 +1,16 @@
 #!/usr/bin/env python
-import rospy
-import tf
 import cv2
-import time
-from styx_msgs.msg import TrafficLightArray, TrafficLight
-from std_msgs.msg import Header
-from geometry_msgs.msg import PoseStamped, Quaternion, TwistStamped
-
-import numpy as np
-import rospkg
 import math
+import rospkg
+import time
+
+from geometry_msgs.msg import PoseStamped, Quaternion, TwistStamped
+import numpy as np
+import rospy
+from std_msgs.msg import Header
+from styx_msgs.msg import TrafficLightArray, TrafficLight
+import tf
+
 
 class TLPublisher(object):
     def __init__(self):

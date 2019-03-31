@@ -16,9 +16,11 @@ The yaml parsing is courtesy ROS-user Stephan:
 
 This file just extends that parser into a rosnode.
 """
-import rospy
 import yaml
+
+import rospy
 from sensor_msgs.msg import CameraInfo
+
 
 def yaml_to_CameraInfo(calib_yaml):
     """
