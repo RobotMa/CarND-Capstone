@@ -86,28 +86,21 @@ class WaypointUpdater(object):
         farthest_idx = closest_idx + LOOKAHEAD_WPS
         base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
         
-        print("closest idx is {}".format(closest_idx))
-        print("farthest idx is {}".format(farthest_idx))
-        print("stopline wp idx is {}".format(self.stopline_wp_idx))
-        
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
-            print("nothing happened?")
             lane.waypoints = base_waypoints
         else:
-            print("trigger deceleration profile generation")
             lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
 
         return lane
         
     def decelerate_waypoints(self, waypoints, closest_idx):
-        print("generate deceleration profile")
         temp = []
         for i, wp in enumerate(waypoints):
             
             p = Waypoint()
             p.pose = wp.pose
             
-            stop_idx = max(self.stopline_wp_idx - closest_idx - 5, 0)
+            stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0)
             dist = self.distance(waypoints, i, stop_idx)
             vel = math.sqrt(2*MAX_DECEL*dist)
             if vel < .1:
@@ -133,7 +126,7 @@ class WaypointUpdater(object):
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
         print('Received stop point is {}'.format(msg.data))
-        self.stopline_wp_idx = msg
+        self.stopline_wp_idx = msg.data
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
