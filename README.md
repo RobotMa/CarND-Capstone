@@ -2,6 +2,8 @@ This is an individual and independent work on the capstone project. No other tea
 IC Name : Qianli Ma
 Email: qianli.ma622@gmail.com
 
+The project is mainly composed of three parts : waypoint updater, DBW node and traffic light detection node. All the work and simulation are done on the host machine instead of the Udacity workspace, and the ego vehicle is able to speed up and slow down to stop based on the status of the detected traffic lights.
+
 This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car. For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/6047fe34-d93c-4f50-8336-b70ef10cb4b2/modules/e1a23b06-329a-4684-a717-ad476f0d8dff/lessons/462c933d-9f24-42d3-8bdc-a08a5fc866e4/concepts/5ab4b122-83e6-436d-850f-9f4d26627fd9).
 
 Please use **one** of the two installation options, either native **or** docker installation.
